@@ -3,6 +3,8 @@
 #
 # requires:
 # pip install git+https://github.com/naturale0/rmrl.git
+#
+# Use Python 3.8 compatible syntax on purpose.
 
 import sys
 from json import load
@@ -11,11 +13,12 @@ from os.path import join, isdir
 from shutil import rmtree
 import re
 from datetime import datetime, timezone
+from typing import Optional
 from rmrl import render
 
 
 class Element(object):
-    def __init__(self, element_id: str, name: str, last_modified, parent_id=None, is_document: bool = False):
+    def __init__(self, element_id: str, name: str, last_modified: Optional[datetime], parent_id: Optional[str] = None, is_document: bool = False):
         self.parent = None
         self.children = set()
         self.children_ids = set()
@@ -76,7 +79,7 @@ def build_tree(all_elements: dict, root_element: Element):
             root_element.children_ids.add(element_id)
 
 
-def pdf_tree(current_path, all_elements, root_element, to_delete):
+def pdf_tree(current_path: str, all_elements: dict, root_element: Element, to_delete: list):
     files = listdir(current_path)
     for fname in files:
         # there is only 2 cases:
@@ -119,7 +122,7 @@ def pdf_tree(current_path, all_elements, root_element, to_delete):
             to_delete.append(fullname)
 
 
-def create_pdfs(current_element, current_path):
+def create_pdfs(current_element: Element, current_path: str):
     now = datetime.utcnow()
     if current_element.filename is None:
         if current_element.is_document:
